@@ -1,3 +1,5 @@
+// src/types/express.d.ts
+
 import type { User } from "better-auth/types";
 
 declare global {

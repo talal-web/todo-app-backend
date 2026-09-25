@@ -15,6 +15,10 @@ export class TodoController {
     return req.user.id;
   }
 
+  private getUser(req: Request) {
+    return req.user;
+  }
+
   async create(req: Request, res: Response): Promise<void> {
     const userId = this.getUserId(req);
 
@@ -24,11 +28,11 @@ export class TodoController {
   }
 
   async getAll(req: Request, res: Response): Promise<void> {
-    const userId = this.getUserId(req);
+    const user = this.getUser(req);
 
-    const todos = await this.todoService.getTodos(userId);
+    const data = await this.todoService.getTodos(user);
 
-    ApiResponse.success(res, 200, "Todos retrieved successfully", todos);
+    ApiResponse.success(res, 200, "Todos retrieved successfully", data);
   }
 
   async getOne(req: Request, res: Response): Promise<void> {

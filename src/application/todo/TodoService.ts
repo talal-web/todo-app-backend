@@ -27,8 +27,16 @@ export class TodoService {
     });
   }
 
-  async getTodos(userId: string) {
-    return this.todoRepository.findAll(userId);
+  async getTodos(user: { id: string; name?: string | null }) {
+    const todos = await this.todoRepository.findAll(user.id);
+
+    return {
+      user: {
+        id: user.id,
+        name: user.name ?? null,
+      },
+      todos,
+    };
   }
 
   async getTodo(id: number, userId: string) {
