@@ -1,6 +1,7 @@
 import { injectable } from "tsyringe";
 
-import { prisma } from "../prisma.js";
+import { AppDataSource } from "../../../infrastructure/database/data-source.js";
+import { Todo } from "../../../infrastructure/database/models/Todo.js";
 
 import type { TodoEntity } from "../../../domain/todo/TodoEntity.js";
 import type {
@@ -11,32 +12,33 @@ import type {
 
 @injectable()
 export class TodoRepository implements ITodoRepository {
+  private get repository() {
+    return AppDataSource.getRepository(Todo);
+  }
+
   async create(data: CreateTodoData): Promise<TodoEntity> {
-    return prisma.todo.create({
-      data: {
-        title: data.title,
-        userId: data.userId,
-      },
+    const now = new Date();
+
+    const todo = this.repository.create({
+      title: data.title,
+      userId: data.userId,
+      createdAt: now,
+      updatedAt: now,
     });
+
+    return this.repository.save(todo);
   }
 
   async findAll(userId: string): Promise<TodoEntity[]> {
-    return prisma.todo.findMany({
-      where: {
-        userId,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
+    return this.repository.find({
+      where: { userId },
+      order: { createdAt: "DESC" },
     });
   }
 
   async findById(id: number, userId: string): Promise<TodoEntity | null> {
-    return prisma.todo.findFirst({
-      where: {
-        id,
-        userId,
-      },
+    return this.repository.findOne({
+      where: { id, userId },
     });
   }
 
@@ -45,33 +47,21 @@ export class TodoRepository implements ITodoRepository {
     userId: string,
     data: UpdateTodoData,
   ): Promise<TodoEntity | null> {
-    const todo = await this.findById(id, userId);
+    const result = await this.repository.update({ id, userId }, data);
 
-    if (!todo) {
+    if (!result.affected) {
       return null;
     }
 
-    return prisma.todo.update({
-      where: {
-        id,
-      },
-      data,
-    });
+    return this.findById(id, userId);
   }
 
   async delete(id: number, userId: string): Promise<boolean> {
-    const todo = await this.findById(id, userId);
-
-    if (!todo) {
-      return false;
-    }
-
-    await prisma.todo.delete({
-      where: {
-        id,
-      },
+    const result = await this.repository.delete({
+      id,
+      userId,
     });
 
-    return true;
+    return (result.affected ?? 0) > 0;
   }
 }

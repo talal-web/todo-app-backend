@@ -1,12 +1,14 @@
-import { betterAuth } from "better-auth";
-import { prismaAdapter } from "@better-auth/prisma-adapter";
+import "dotenv/config";
 
-import { prisma } from "../database/prisma";
+import { betterAuth } from "better-auth";
+import mysql from "mysql2/promise";
+
+const mysqlPool = mysql.createPool({
+  uri: process.env.DATABASE_URL!,
+});
 
 const auth = betterAuth({
-  database: prismaAdapter(prisma, {
-    provider: "mysql",
-  }),
+  database: mysqlPool,
 
   emailAndPassword: {
     enabled: true,

@@ -1,7 +1,9 @@
 export interface UserEntity {
-  id: number;
+  id: string;
   name: string;
   email: string;
-  passwordHash: string;
-  created_at: Date;
+  emailVerified: boolean;
+  image: string | null;
+  createdAt: Date;
+  updatedAt: Date;
 }

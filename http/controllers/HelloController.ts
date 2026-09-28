@@ -5,7 +5,7 @@ import { HelloRepository } from "../../src/infrastructure/database/repositories/
 const helloRepository = new HelloRepository();
 const helloService = new HelloService(helloRepository);
 
-export const HelloController = async (req: Request, res: Response) => {
+export const HelloController = async (_req: Request, res: Response) => {
   const result = await helloService.getHello();
   res.json(result);
 };
