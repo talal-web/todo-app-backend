@@ -1,9 +1,6 @@
-### `backend/README.md`
-
-````md
 # Todo App — Backend
 
-A scalable REST API for the Todo application built with Node.js, Express, TypeScript, MySQL, Prisma, Better Auth, and tsyringe.
+A scalable REST API for the Todo application built with Node.js, Express, TypeScript, MySQL, TypeORM, Better Auth, and tsyringe.
 
 ## Tech Stack
 
@@ -11,7 +8,7 @@ A scalable REST API for the Todo application built with Node.js, Express, TypeSc
 - Express.js
 - TypeScript
 - MySQL
-- Prisma
+- TypeORM
 - Better Auth
 - tsyringe
 - Pino
@@ -28,7 +25,7 @@ A scalable REST API for the Todo application built with Node.js, Express, TypeSc
 - Repository pattern
 - Service layer
 - Dependency injection
-- Prisma ORM
+- TypeORM ORM
 - MySQL database
 - Centralized API responses
 - Centralized error handling
@@ -52,8 +49,7 @@ Repository Interface
     ↓
 Infrastructure Repository
     ↓
-Prisma
+TypeORM
     ↓
 MySQL
 ```
-````
