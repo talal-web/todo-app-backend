@@ -23,7 +23,7 @@ export class Todo {
   @Column({ type: "boolean", default: false })
   completed!: boolean;
 
-  @Column({ type: "varchar", length: 255 })
+  @Column({ type: "varchar", length: 36 })
   userId!: string;
 
   @ManyToOne(() => User, (user) => user.todos, {

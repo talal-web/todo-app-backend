@@ -1,6 +1,6 @@
 # Todo App — Backend
 
-A scalable REST API for the Todo application built with Node.js, Express, TypeScript, MySQL, TypeORM, Better Auth, and tsyringe.
+A scalable REST API for the Todo application built with Node.js, Express, TypeScript, MySQL, TypeORM, JWT Auth, and tsyringe.
 
 ## Tech Stack
 
@@ -9,7 +9,7 @@ A scalable REST API for the Todo application built with Node.js, Express, TypeSc
 - TypeScript
 - MySQL
 - TypeORM
-- Better Auth
+
 - tsyringe
 - Pino
 - CORS
@@ -18,7 +18,6 @@ A scalable REST API for the Todo application built with Node.js, Express, TypeSc
 ## Features
 
 - User authentication
-- Better Auth integration
 - Session-based authentication
 - Todo CRUD operations
 - User-specific todos

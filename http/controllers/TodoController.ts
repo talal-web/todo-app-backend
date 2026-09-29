@@ -3,6 +3,7 @@ import { container } from "tsyringe";
 
 import { TodoService } from "../../src/application/todo/TodoService.js";
 import { ApiResponse } from "../response/ApiResponse.js";
+import { ApiError } from "../errors/ApiError.js";
 
 export class TodoController {
   private readonly todoService: TodoService;
@@ -12,32 +13,42 @@ export class TodoController {
   }
 
   private getUserId(req: Request): string {
+    if (!req.user) {
+      throw new ApiError(401, "Unauthorized");
+    }
+
     return req.user.id;
   }
 
-  private getUser(req: Request) {
-    return req.user;
+  private getTodoId(req: Request): number {
+    const id = Number(req.params.id);
+
+    if (!Number.isInteger(id) || id <= 0) {
+      throw new ApiError(400, "Invalid todo ID");
+    }
+
+    return id;
   }
 
-  async create(req: Request, res: Response): Promise<void> {
+  create = async (req: Request, res: Response): Promise<void> => {
     const userId = this.getUserId(req);
 
     const todo = await this.todoService.createTodo(userId, req.body);
 
     ApiResponse.success(res, 201, "Todo created successfully", todo);
-  }
+  };
 
-  async getAll(req: Request, res: Response): Promise<void> {
-    const user = this.getUser(req);
+  getAll = async (req: Request, res: Response): Promise<void> => {
+    const userId = this.getUserId(req);
 
-    const data = await this.todoService.getTodos(user);
+    const data = await this.todoService.getTodos(userId);
 
     ApiResponse.success(res, 200, "Todos retrieved successfully", data);
-  }
+  };
 
-  async getOne(req: Request, res: Response): Promise<void> {
+  getOne = async (req: Request, res: Response): Promise<void> => {
     const userId = this.getUserId(req);
-    const id = Number(req.params.id);
+    const id = this.getTodoId(req);
 
     const todo = await this.todoService.getTodo(id, userId);
 
@@ -47,11 +58,11 @@ export class TodoController {
     }
 
     ApiResponse.success(res, 200, "Todo retrieved successfully", todo);
-  }
+  };
 
-  async update(req: Request, res: Response): Promise<void> {
+  update = async (req: Request, res: Response): Promise<void> => {
     const userId = this.getUserId(req);
-    const id = Number(req.params.id);
+    const id = this.getTodoId(req);
 
     const todo = await this.todoService.updateTodo(id, userId, req.body);
 
@@ -61,11 +72,11 @@ export class TodoController {
     }
 
     ApiResponse.success(res, 200, "Todo updated successfully", todo);
-  }
+  };
 
-  async delete(req: Request, res: Response): Promise<void> {
+  delete = async (req: Request, res: Response): Promise<void> => {
     const userId = this.getUserId(req);
-    const id = Number(req.params.id);
+    const id = this.getTodoId(req);
 
     const deleted = await this.todoService.deleteTodo(id, userId);
 
@@ -75,5 +86,5 @@ export class TodoController {
     }
 
     ApiResponse.success(res, 200, "Todo deleted successfully");
-  }
+  };
 }

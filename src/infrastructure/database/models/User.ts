@@ -1,45 +1,30 @@
 import {
   Entity,
-  PrimaryColumn,
+  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn,
   OneToMany,
 } from "typeorm";
 
 import { Todo } from "./Todo.js";
-import { Session } from "./Session.js";
-import { Account } from "./Account.js";
 
-@Entity("user")
+@Entity("users")
 export class User {
-  @PrimaryColumn({ type: "varchar", length: 255 })
+  @PrimaryGeneratedColumn("uuid")
   id!: string;
 
-  @Column({ type: "varchar", length: 255 })
-  name!: string;
-
-  @Column({ type: "varchar", length: 255, unique: true })
+  @Column({ type: "varchar", unique: true })
   email!: string;
 
-  @Column({ type: "boolean", default: false })
-  emailVerified!: boolean;
+  @Column({ type: "varchar" })
+  name!: string;
 
-  @Column({ type: "text", nullable: true })
-  image!: string | null;
+  @Column({ type: "varchar", select: false })
+  password!: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: "datetime" })
   createdAt!: Date;
-
-  @UpdateDateColumn()
-  updatedAt!: Date;
 
   @OneToMany(() => Todo, (todo) => todo.user)
   todos!: Todo[];
-
-  @OneToMany(() => Session, (session) => session.user)
-  sessions!: Session[];
-
-  @OneToMany(() => Account, (account) => account.user)
-  accounts!: Account[];
 }

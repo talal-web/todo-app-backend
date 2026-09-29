@@ -2,8 +2,12 @@ export interface UserEntity {
   id: string;
   name: string;
   email: string;
-  emailVerified: boolean;
-  image: string | null;
-  createdAt: Date;
-  updatedAt: Date;
+  password: string;
+  createdAt?: Date;
+}
+
+export interface CreateUser {
+  name: string;
+  email: string;
+  password: string;
 }

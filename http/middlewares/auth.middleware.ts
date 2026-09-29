@@ -1,29 +1,42 @@
 import type { Request, Response, NextFunction } from "express";
-import { fromNodeHeaders } from "better-auth/node";
+import jwt from "jsonwebtoken";
 
-import auth from "../../src/infrastructure/auth/auth.js";
+import { ApiError } from "../errors/ApiError.js";
 
-export async function requireAuth(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
+interface JwtPayload {
+  sub: string;
+}
+
+export function requireAuth(req: Request, res: Response, next: NextFunction) {
   try {
-    const session = await auth.api.getSession({
-      headers: fromNodeHeaders(req.headers),
-    });
+    const token = req.cookies?.token;
 
-    if (!session) {
-      return res.status(401).json({
-        success: false,
-        message: "Unauthorized",
-      });
+    if (!token) {
+      throw new ApiError(401, "Unauthorized");
     }
 
-    req.user = session.user;
+    const secret = process.env.JWT_SECRET;
+
+    if (!secret) {
+      throw new ApiError(500, "JWT_SECRET is not configured");
+    }
+
+    const decoded = jwt.verify(token, secret) as JwtPayload;
+
+    if (typeof decoded.sub !== "string") {
+      throw new ApiError(401, "Invalid token");
+    }
+
+    req.user = {
+      id: decoded.sub,
+    };
 
     next();
   } catch (error) {
+    if (error instanceof jwt.JsonWebTokenError) {
+      return next(new ApiError(401, "Invalid or expired token"));
+    }
+
     next(error);
   }
 }
