@@ -8,6 +8,10 @@ import type {
 
 import type { IUserRepository } from "../../domain/auth/IUserRepository.js";
 import { ApiError } from "../../../http/errors/ApiError.js";
+import {
+  ERROR_MESSAGES,
+  HTTP_STATUS,
+} from "../../../http/errors/errorMessages.js";
 
 @injectable()
 export class TodoService {
@@ -23,7 +27,10 @@ export class TodoService {
     const title = data.title?.trim();
 
     if (!title) {
-      throw new ApiError(400, "Todo title is required");
+      throw new ApiError(
+        HTTP_STATUS.BAD_REQUEST,
+        ERROR_MESSAGES.TODO.TITLE_REQUIRED,
+      );
     }
 
     return this.todoRepository.create({
@@ -39,7 +46,7 @@ export class TodoService {
     ]);
 
     if (!user) {
-      throw new ApiError(404, "User not found");
+      throw new ApiError(HTTP_STATUS.NOT_FOUND, ERROR_MESSAGES.USER.NOT_FOUND);
     }
 
     return {
@@ -61,7 +68,10 @@ export class TodoService {
       const title = data.title.trim();
 
       if (!title) {
-        throw new ApiError(400, "Todo title cannot be empty");
+        throw new ApiError(
+          HTTP_STATUS.BAD_REQUEST,
+          ERROR_MESSAGES.TODO.TITLE_EMPTY,
+        );
       }
 
       data = { ...data, title };

@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
-import errorMiddleware from "./http/middlewares/error.middleware.js";
+import { errorMiddleware } from "./http/middlewares/index.middleware.js";
 import helloRoutes from "./http/routes/hello.routes.js";
 import todoRoutes from "./http/routes/todo.routes.js";
 import authRoutes from "./http/routes/auth.routes.js";
