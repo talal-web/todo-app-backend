@@ -5,6 +5,8 @@ import type {
   ITodoRepository,
   UpdateTodoData,
 } from "../../domain/todo/ITodoRepository.js";
+
+import type { IUserRepository } from "../../domain/auth/IUserRepository.js";
 import { ApiError } from "../../../http/errors/ApiError.js";
 
 @injectable()
@@ -12,6 +14,9 @@ export class TodoService {
   constructor(
     @inject("ITodoRepository")
     private readonly todoRepository: ITodoRepository,
+
+    @inject("IUserRepository")
+    private readonly userRepository: IUserRepository,
   ) {}
 
   async createTodo(userId: string, data: CreateTodoData) {
@@ -28,9 +33,21 @@ export class TodoService {
   }
 
   async getTodos(userId: string) {
-    const todos = await this.todoRepository.findAll(userId);
+    const [user, todos] = await Promise.all([
+      this.userRepository.findById(userId),
+      this.todoRepository.findAll(userId),
+    ]);
+
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
 
     return {
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      },
       todos,
     };
   }
@@ -47,10 +64,7 @@ export class TodoService {
         throw new ApiError(400, "Todo title cannot be empty");
       }
 
-      data = {
-        ...data,
-        title,
-      };
+      data = { ...data, title };
     }
 
     return this.todoRepository.update(id, userId, data);

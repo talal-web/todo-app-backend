@@ -1,12 +1,17 @@
+import { inject, injectable } from "tsyringe";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-import type { IUserRepository } from "../../domain/auth/IUserRepository";
-import type { CreateUser } from "../../domain/auth/UserEntity";
-import { ApiError } from "../../../http/errors/ApiError";
+import type { IUserRepository } from "../../domain/auth/IUserRepository.js";
+import type { CreateUser } from "../../domain/auth/UserEntity.js";
+import { ApiError } from "../../../http/errors/ApiError.js";
 
+@injectable()
 export class AuthService {
-  constructor(private readonly userRepository: IUserRepository) {}
+  constructor(
+    @inject("IUserRepository")
+    private readonly userRepository: IUserRepository,
+  ) {}
 
   async register(data: CreateUser) {
     if (typeof data.password !== "string" || data.password.length < 8) {
@@ -52,13 +57,12 @@ export class AuthService {
       throw new ApiError(500, "JWT_SECRET is not configured");
     }
 
-    const token = jwt.sign({ sub: user.id }, secret, { expiresIn: "5m" });
+    const token = jwt.sign({ sub: user.id }, secret, { expiresIn: "15m" });
 
     return {
       user: {
         id: user.id,
         name: user.name,
-        email: user.email,
       },
       token,
     };

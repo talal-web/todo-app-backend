@@ -1,3 +1,5 @@
+import { injectable } from "tsyringe";
+
 import { AppDataSource } from "../../database/data-source.js";
 import { User } from "../models/User.js";
 import type {
@@ -6,6 +8,7 @@ import type {
 } from "../../../domain/auth/UserEntity.js";
 import type { IUserRepository } from "../../../domain/auth/IUserRepository.js";
 
+@injectable()
 export class UserRepository implements IUserRepository {
   private get repo() {
     return AppDataSource.getRepository(User);
@@ -27,6 +30,12 @@ export class UserRepository implements IUserRepository {
   async findById(id: string): Promise<UserEntity | null> {
     return this.repo.findOne({
       where: { id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true,
+      },
     });
   }
 
